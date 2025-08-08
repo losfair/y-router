@@ -225,8 +225,9 @@ export function formatAnthropicToOpenAI(body: MessageCreateParamsBase): any {
   const data: any = {
     model: mapModel(model),
     messages: [...systemMessages, ...openAIMessages],
-    temperature,
+    temperature: temperature === 0 ? 1 : temperature,
     stream,
+    reasoning_effort: 'low',
   };
 
   if (tools) {

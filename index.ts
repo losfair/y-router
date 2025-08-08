@@ -42,6 +42,7 @@ export default {
         request.headers.get("Authorization")?.replace("Bearer ", "");
 
       const baseUrl = env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1';
+      console.log("Upstream request", { method: "POST", url: `${baseUrl}/chat/completions`, headers: { Authorization: bearerToken ? "[redacted]" : undefined, "Content-Type": "application/json" }, body: openaiRequest });
       const openaiResponse = await fetch(`${baseUrl}/chat/completions`, {
         method: "POST",
         headers: {
@@ -52,7 +53,9 @@ export default {
       });
 
       if (!openaiResponse.ok) {
-        return new Response(await openaiResponse.text(), { status: openaiResponse.status });
+        const responseBody = await openaiResponse.text();
+        console.log("Upstream API request failed", { status: openaiResponse.status, body: responseBody });
+        return new Response(responseBody, { status: openaiResponse.status });
       }
 
       if (openaiRequest.stream) {
